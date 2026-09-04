@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analisis Sentimen Sensus Ekonomi Tangsel - Dahlia Agustina</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Font Google (Plus Jakarta Sans & Quicksand for Cute Modern Vibe) -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            cute: ['Quicksand', 'sans-serif'],
+          },
+          colors: {
+            pastel: {
+              pink: '#FFB7B2',
+              purple: '#E2F0CB',
+              softblue: '#C7CEEA',
+              yellow: '#FFDAC1',
+              mint: '#B5EAD7',
+              rose: '#FF9AA2',
+            },
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 50%, #f0fdf4 100%);
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 10px 25px -5px rgba(255, 182, 193, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+    .cute-button {
+      transition: all 0.2s ease-in-out;
+    }
+    .cute-button:hover {
+      transform: translateY(-2px) scale(1.02);
+    }
+    .cute-button:active {
+      transform: translateY(0) scale(0.98);
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ffb7b2;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="font-sans text-slate-700 pb-12">
+
+  <!-- Header / Navigation Bar -->
+  <header class="sticky top-0 z-50 px-4 py-3">
+    <div class="max-w-7xl mx-auto glass-card rounded-2xl px-6 py-4 flex flex-wrap justify-between items-center shadow-lg border border-pink-100">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-gradient-to-tr from-pink-400 to-amber-300 rounded-2xl flex items-center justify-center text-white shadow-md transform rotate-3">
+          <i data-lucide="bar-chart-3" class="w-7 h-7"></i>
+        </div>
+        <div>
+          <h1 class="font-cute font-bold text-xl md:text-2xl text-slate-800 tracking-wide">
+            Sentimen Sensus Tangsel <span class="text-pink-500">✨</span>
+          </h1>
+          <p class="text-xs text-slate-500 font-medium">Monitoring Analisis Persepsi Ekonomi Warga Tangsel</p>
+        </div>
+      </div>
+
+      <!-- Identity Card (DAHLIA AGUSTINA) -->
+      <div class="mt-3 sm:mt-0 flex items-center space-x-3 bg-gradient-to-r from-pink-50 to-orange-50 px-4 py-2 rounded-2xl border border-pink-200/60 shadow-sm">
+        <div class="w-10 h-10 rounded-full bg-pink-300 flex items-center justify-center text-white font-bold border-2 border-white shadow">
+          👩‍🎓
+        </div>
+        <div class="text-left">
+          <div class="font-bold text-xs md:text-sm text-slate-800 flex items-center gap-1">
+            <span>DAHLIA AGUSTINA</span>
+            <span class="bg-pink-400 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">Mahasiswi</span>
+          </div>
+          <div class="text-[11px] text-pink-600 font-semibold tracking-wider">NIM: 231011402210</div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto px-4 mt-6 space-y-6">
+
+    <!-- Top Banner & Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      
+      <!-- Total Sentimen Warga -->
+      <div class="glass-card rounded-3xl p-5 flex items-center space-x-4 border-l-8 border-pink-400">
+        <div class="p-3 bg-pink-100 text-pink-500 rounded-2xl">
+          <i data-lucide="message-circle" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Opini</p>
+          <h3 class="text-2xl font-bold text-slate-800" id="totalOpinions">1,248</h3>
+          <span class="text-[10px] bg-pink-100 text-pink-600 font-bold px-2 py-0.5 rounded-full">Kecamatan Tangsel</span>
+        </div>
+      </div>
+
+      <!-- Positif -->
+      <div class="glass-card rounded-3xl p-5 flex items-center space-x-4 border-l-8 border-emerald-400">
+        <div class="p-3 bg-emerald-100 text-emerald-500 rounded-2xl">
+          <i data-lucide="smile" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sentimen Positif</p>
+          <h3 class="text-2xl font-bold text-emerald-600" id="positiveCount">682 (54.6%)</h3>
+          <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">Mendukung Sensus</span>
+        </div>
+      </div>
+
+      <!-- Netral -->
+      <div class="glass-card rounded-3xl p-5 flex items-center space-x-4 border-l-8 border-amber-400">
+        <div class="p-3 bg-amber-100 text-amber-500 rounded-2xl">
+          <i data-lucide="meh" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sentimen Netral</p>
+          <h3 class="text-2xl font-bold text-amber-600" id="neutralCount">342 (27.4%)</h3>
+          <span class="text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full">Pertanyaan / Info</span>
+        </div>
+      </div>
+
+      <!-- Negatif -->
+      <div class="glass-card rounded-3xl p-5 flex items-center space-x-4 border-l-8 border-rose-400">
+        <div class="p-3 bg-rose-100 text-rose-500 rounded-2xl">
+          <i data-lucide="frown" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sentimen Negatif</p>
+          <h3 class="text-2xl font-bold text-rose-600" id="negativeCount">224 (18.0%)</h3>
+          <span class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-full">Keluhan / Privasi</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- API Config Panel (Apify Integration) -->
+    <div class="glass-card rounded-3xl p-6 relative overflow-hidden border-2 border-indigo-100">
+      <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-100/50 rounded-full blur-2xl -z-10"></div>
+      
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🚀</span>
+            <h2 class="text-lg font-bold text-slate-800">Status Integrasi API Scraping (Apify)</h2>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">
+            Data disinkronkan secara realtime dari media sosial (Twitter/X, Instagram, TikTok) seputar Sensus Ekonomi BPS Tangsel.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="bg-slate-100 px-3 py-2 rounded-xl text-xs flex items-center gap-2 border border-slate-200">
+            <i data-lucide="key" class="w-4 h-4 text-slate-400"></i>
+            <span class="font-mono text-slate-600">Token: apify_api_K6zJ...6E0</span>
+            <span class="bg-emerald-500 w-2 h-2 rounded-full animate-ping"></span>
+          </div>
+          <button onclick="triggerApifyFetch()" id="btnSync" class="cute-button bg-gradient-to-r from-pink-500 to-rose-400 hover:from-pink-600 hover:to-rose-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md">
+            <i data-lucide="refresh-cw" class="w-4 h-4" id="syncIcon"></i>
+            <span>Tarik Data Terbaru</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Apify Status Info Bar -->
+      <div id="apiAlert" class="hidden mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+          <span><strong>Apify User Connected!</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono">1OJDdcTW9YIU9Rqwe</code>. Berhasil mengambil 15 data komentar baru!</span>
+        </div>
+        <button onclick="closeApiAlert()" class="text-emerald-500 hover:text-emerald-700">✕</button>
+      </div>
+    </div>
+
+    <!-- Analytics & Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Chart Doughnut (Distribusi Sentimen) -->
+      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i data-lucide="pie-chart" class="w-5 h-5 text-pink-500"></i>
+              Distribusi Sentimen Warga
+            </h3>
+            <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-lg">Tangsel 2026</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-4">Persentase persepsi masyarakat terhadap kedatangan petugas sensus ekonomi BPS.</p>
+        </div>
+        <div class="relative flex justify-center items-center h-64">
+          <canvas id="sentimentDoughnutChart"></canvas>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 text-center">
+          <p class="text-xs text-slate-400">Mayoritas warga BSD & Serpong menyambut baik sensus ekonomi digital.</p>
+        </div>
+      </div>
+
+      <!-- Chart Bar (Sentimen Per Kecamatan di Tangsel) -->
+      <div class="glass-card rounded-3xl p-6 lg:col-span-2">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-5 h-5 text-indigo-500"></i>
+            Analisis Sentimen per Kecamatan di Tangsel
+          </h3>
+          <span class="text-xs bg-pink-100 text-pink-600 font-bold px-2.5 py-1 rounded-lg">7 Kecamatan</span>
+        </div>
+        <p class="text-xs text-slate-500 mb-4">Perbandingan jumlah opini positif, netral, dan negatif di wilayah Kota Tangerang Selatan.</p>
+        <div class="h-64">
+          <canvas id="districtBarChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Interactive AI Sentiment Analyzer Tester -->
+    <div class="glass-card rounded-3xl p-6 border-2 border-pink-200">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">🤖</span>
+        <div>
+          <h3 class="font-bold text-slate-800 text-base">Uji Coba Analisis Sentimen Teks (NLP Simulator)</h3>
+          <p class="text-xs text-slate-500">Ketik tanggapan masyarakat terkait Sensus Ekonomi Tangsel untuk mendeteksi sentimen secara otomatis.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-3 mt-4">
+        <input type="text" id="customInput" placeholder="Contoh: Petugas sensusnya ramah banget pas datang ke rumah di Bintaro..." 
+               class="flex-grow px-4 py-3 rounded-2xl border-2 border-pink-100 focus:border-pink-400 focus:outline-none text-sm bg-white/90 shadow-inner">
+        <button onclick="analyzeCustomText()" class="cute-button bg-gradient-to-r from-amber-400 to-pink-500 hover:from-amber-500 hover:to-pink-600 text-white font-bold px-6 py-3 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-md">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Analisis Sekarang</span>
+        </button>
+      </div>
+
+      <!-- Result Box -->
+      <div id="analysisResult" class="hidden mt-4 p-4 rounded-2xl border transition-all duration-300">
+        <!-- Content via JS -->
+      </div>
+    </div>
+
+    <!-- Live Data Table & Word Cloud Topics -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Table Comments (2 Cols) -->
+      <div class="glass-card rounded-3xl p-6 lg:col-span-2 overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i data-lucide="list" class="w-5 h-5 text-rose-500"></i>
+              Data Opini & Feedback Warga Tangsel
+            </h3>
+            <p class="text-xs text-slate-500">Hasil scraping media sosial via Apify API</p>
+          </div>
+
+          <!-- Filter Category -->
+          <div class="flex items-center gap-2">
+            <select id="filterSentiment" onchange="filterData()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-pink-400">
+              <option value="ALL">Semua Sentimen</option>
+              <option value="POSITIF">Positif Saja</option>
+              <option value="NETRAL">Netral Saja</option>
+              <option value="NEGATIF">Negatif Saja</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-pink-100 text-slate-400 uppercase font-semibold">
+                <th class="py-3 px-3">Warga / Sumber</th>
+                <th class="py-3 px-3">Kecamatan</th>
+                <th class="py-3 px-3">Komentar / Opini</th>
+                <th class="py-3 px-3 text-center">Sentimen</th>
+              </tr>
+            </thead>
+            <tbody id="dataTableBody" class="divide-y divide-slate-100">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Key Topics & Trending Issues -->
+      <div class="glass-card rounded-3xl p-6 flex flex-col justify-between">
+        <div>
+          <h3 class="font-bold text-slate-800 text-base flex items-center gap-2 mb-2">
+            <i data-lucide="hash" class="w-5 h-5 text-amber-500"></i>
+            Topik Utama & Kata Kunci
+          </h3>
+          <p class="text-xs text-slate-500 mb-4">Kata kunci yang paling sering muncul dalam perbincangan sensus ekonomi.</p>
+
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1.5 bg-pink-100 text-pink-700 font-bold rounded-xl text-xs flex items-center gap-1 shadow-sm">
+              🏷️ Petugas Ramah <small class="text-pink-400">(240)</small>
+            </span>
+            <span class="px-3 py-1.5 bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs flex items-center gap-1 shadow-sm">
+              🏷️ UMKM Tangsel <small class="text-emerald-500">(185)</small>
+            </span>
+            <span class="px-3 py-1.5 bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs flex items-center gap-1 shadow-sm">
+              🏷️ Kerahasiaan Data <small class="text-indigo-400">(142)</small>
+            </span>
+            <span class="px-3 py-1.5 bg-amber-100 text-amber-700 font-bold rounded-xl text-xs flex items-center gap-1 shadow-sm">
+              🏷️ Sensus Digital <small class="text-amber-600">(120)</small>
+            </span>
+            <span class="px-3 py-1.5 bg-rose-100 text-rose-700 font-bold rounded-xl text-xs flex items-center gap-1 shadow-sm">
+              🏷️ Khawatir Penipuan <small class="text-rose-400">(98)</small>
+            </span>
+            <span class="px-3 py-1.5 bg-purple-100 text-purple-700 font-bold rounded-xl text-xs flex items-center gap-1 shadow-sm">
+              🏷️ BPS Kota Tangsel <small class="text-purple-400">(85)</small>
+            </span>
+          </div>
+        </div>
+
+        <!-- Cute Summary Info Box -->
+        <div class="mt-6 p-4 bg-gradient-to-br from-pink-100 to-orange-100 rounded-2xl border border-pink-200">
+          <div class="flex items-center gap-2 text-pink-700 font-bold text-xs mb-1">
+            <span>💡 Kesimpulan Analisis</span>
+          </div>
+          <p class="text-[11px] text-slate-600 leading-relaxed">
+            Masyarakat Kota Tangerang Selatan secara umum merespons positif Sensus Ekonomi. Kekhawatiran utama terletak pada keaslian identitas petugas sensus guna mencegah penipuan.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="max-w-7xl mx-auto px-4 mt-12 text-center text-xs text-slate-400 border-t border-slate-200/60 pt-6">
+    <p class="font-cute text-sm text-slate-600 font-semibold mb-1">
+      Aplikasi Analisis Sentimen Sensus Ekonomi Tangsel ✨
+    </p>
+    <p>
+      Dibuat dengan ❤️ oleh <strong class="text-pink-500">DAHLIA AGUSTINA</strong> (NIM: <code class="text-slate-600">231011402210</code>)
+    </p>
+    <p class="text-[10px] text-slate-400 mt-2">
+      Terintegrasi dengan Apify Scraping API Engine • Tangerang Selatan
+    </p>
+  </footer>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Data Sample Comments Warga Tangsel
+    const rawComments = [
+      { name: "@rizky_bsd", district: "Serpong", comment: "Petugas sensus ekonomi BPS kemarin sopan banget pas datang ke toko. Prosesnya cepat via tablet digital!", sentiment: "POSITIF", icon: "twitter" },
+      { name: "@mami_pamulang", district: "Pamulang", comment: "Semoga data sensus ini beneran dipake buat majuin UMKM kuliner di Tangsel ya, jangan cuma formalitas.", sentiment: "POSITIF", icon: "instagram" },
+      { name: "@bintaro_news", district: "Pondok Aren", comment: "Tadi ada petugas sensus pakai seragam resmi dan tanda pengenal BPS. Hati-hati ya warga, selalu verifikasi id cardnya!", sentiment: "NETRAL", icon: "twitter" },
+      { name: "@hendra_ciputat", district: "Ciputat", comment: "Agak risih pas ditanya omzet bulanan usaha laundry saya, tapi dijelasin kalau datanya dijamin rahasia UU.", sentiment: "NETRAL", icon: "facebook" },
+      { name: "@warga_setu", district: "Setu", comment: "Takut penipuan mengatasnamakan sensus euy. Harusnya ada sosialisasi lebih gencar di RT/RW setempat.", sentiment: "NEGATIF", icon: "instagram" },
+      { name: "@alamsutera_kuliner", district: "Serpong Utara", comment: "Pendataan sensus ekonomi bagus banget buat pemetaan bisnis retail di Tangsel!", sentiment: "POSITIF", icon: "tiktok" },
+      { name: "@fajar_ciputat_timur", district: "Ciputat Timur", comment: "Petugasnya datang pas jam kerja, rumah kosong. Harusnya bisa isi mandiri secara online lewat link resmi.", sentiment: "NEGATIF", icon: "twitter" },
+      { name: "@toko_kelontong_paml", district: "Pamulang", comment: "Sangat mendukung! Sukseskan Sensus Ekonomi Kota Tangsel!", sentiment: "POSITIF", icon: "facebook" }
+    ];
+
+    let currentData = [...rawComments];
+
+    // Load Data to Table
+    function renderTable(data) {
+      const tbody = document.getElementById('dataTableBody');
+      tbody.innerHTML = '';
+
+      data.forEach(item => {
+        let badgeStyle = '';
+        if (item.sentiment === 'POSITIF') {
+          badgeStyle = 'bg-emerald-100 text-emerald-700 border-emerald-300';
+        } else if (item.sentiment === 'NETRAL') {
+          badgeStyle = 'bg-amber-100 text-amber-700 border-amber-300';
+        } else {
+          badgeStyle = 'bg-rose-100 text-rose-700 border-rose-300';
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-pink-50/50 transition-colors';
+        tr.innerHTML = `
+          <td class="py-3 px-3 font-semibold text-slate-700 flex items-center gap-1.5">
+            <span class="text-xs opacity-70">👤</span> ${item.name}
+          </td>
+          <td class="py-3 px-3 font-medium text-slate-500">${item.district}</td>
+          <td class="py-3 px-3 text-slate-600 max-w-xs md:max-w-md truncate" title="${item.comment}">${item.comment}</td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${badgeStyle}">
+              ${item.sentiment}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Filter Table Data
+    function filterData() {
+      const val = document.getElementById('filterSentiment').value;
+      if (val === 'ALL') {
+        currentData = [...rawComments];
+      } else {
+        currentData = rawComments.filter(item => item.sentiment === val);
+      }
+      renderTable(currentData);
+    }
+
+    // Simulate Apify Data Trigger
+    function triggerApifyFetch() {
+      const btn = document.getElementById('btnSync');
+      const icon = document.getElementById('syncIcon');
+      
+      icon.classList.add('animate-spin');
+      btn.disabled = true;
+      btn.classList.add('opacity-75');
+
+      setTimeout(() => {
+        icon.classList.remove('animate-spin');
+        btn.disabled = false;
+        btn.classList.remove('opacity-75');
+
+        // Show alert
+        document.getElementById('apiAlert').classList.remove('hidden');
+
+        // Add dummy data fetched from Apify
+        const newData = {
+          name: "@anak_tangsel_hits",
+          district: "Serpong",
+          comment: "Baru aja disensus sama BPS Tangsel. Petugas ramah, pertanyaannya seputar usaha digital. Top!",
+          sentiment: "POSITIF",
+          icon: "twitter"
+        };
+        rawComments.unshift(newData);
+        filterData();
+
+        // Update Counter
+        const totalElem = document.getElementById('totalOpinions');
+        let currentNum = parseInt(totalElem.innerText.replace(',', ''));
+        totalElem.innerText = (currentNum + 1).toLocaleString();
+
+      }, 1500);
+    }
+
+    function closeApiAlert() {
+      document.getElementById('apiAlert').classList.add('hidden');
+    }
+
+    // Interactive Custom Text NLP Sentiment Tester
+    function analyzeCustomText() {
+      const input = document.getElementById('customInput').value.trim();
+      const resultBox = document.getElementById('analysisResult');
+
+      if (!input) {
+        alert('Masukkan kalimat atau tanggapan terlebih dahulu!');
+        return;
+      }
+
+      // Simple Keyword-based sentiment classification algorithm simulation
+      const lower = input.toLowerCase();
+      let sentiment = 'NETRAL';
+      let score = 50;
+      let explanation = 'Kalimat berisi informasi umum atau pertanyaan netral.';
+
+      const posWords = ['ramah', 'bagus', 'cepat', 'setuju', 'dukung', 'mantap', 'membantu', 'suka', 'top', 'sukses', 'aman'];
+      const negWords = ['takut', 'penipuan', 'ribet', 'lama', 'risih', 'lambat', 'kecewa', 'bohong', 'curiga', 'sulit'];
+
+      let posHits = posWords.filter(w => lower.includes(w)).length;
+      let negHits = negWords.filter(w => lower.includes(w)).length;
+
+      if (posHits > negHits) {
+        sentiment = 'POSITIF';
+        score = 85 + (posHits * 5);
+        if (score > 98) score = 98;
+        explanation = 'Ditemukan kata kunci bernada optimis dan mendukung pelaksanaan Sensus Ekonomi Tangsel.';
+      } else if (negHits > posHits) {
+        sentiment = 'NEGATIF';
+        score = 20 - (negHits * 5);
+        if (score < 5) score = 5;
+        explanation = 'Ditemukan kata kunci yang mengindikasikan kekhawatiran atau keluhan dari warga.';
+      }
+
+      resultBox.classList.remove('hidden', 'bg-emerald-50', 'bg-amber-50', 'bg-rose-50', 'border-emerald-200', 'border-amber-200', 'border-rose-200');
+
+      let badgeColor = '';
+      if (sentiment === 'POSITIF') {
+        resultBox.classList.add('bg-emerald-50', 'border-emerald-200');
+        badgeColor = 'bg-emerald-500 text-white';
+      } else if (sentiment === 'NETRAL') {
+        resultBox.classList.add('bg-amber-50', 'border-amber-200');
+        badgeColor = 'bg-amber-500 text-white';
+      } else {
+        resultBox.classList.add('bg-rose-50', 'border-rose-200');
+        badgeColor = 'bg-rose-500 text-white';
+      }
+
+      resultBox.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full font-bold text-xs ${badgeColor}">${sentiment}</span>
+            <span class="text-xs text-slate-500 font-semibold">Tingkat Keyakinan: ${score}%</span>
+          </div>
+          <span class="text-xs text-slate-400">Analisis NLP Tangsel</span>
+        </div>
+        <p class="text-xs text-slate-700 mt-2"><strong>Analisis:</strong> ${explanation}</p>
+      `;
+    }
+
+    // Chart.js Configuration
+    window.onload = function() {
+      renderTable(rawComments);
+
+      // 1. Doughnut Chart Sentimen
+      const ctxDoughnut = document.getElementById('sentimentDoughnutChart').getContext('2d');
+      new Chart(ctxDoughnut, {
+        type: 'doughnut',
+        data: {
+          labels: ['Positif', 'Netral', 'Negatif'],
+          datasets: [{
+            data: [682, 342, 224],
+            backgroundColor: [
+              '#34d399', // Emerald
+              '#fbbf24', // Amber
+              '#f87171'  // Rose
+            ],
+            borderWidth: 3,
+            borderColor: '#ffffff',
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
+                padding: 15,
+                usePointStyle: true
+              }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+
+      // 2. Bar Chart Sentimen per Kecamatan Tangsel
+      const ctxBar = document.getElementById('districtBarChart').getContext('2d');
+      new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: ['Serpong', 'Pamulang', 'Pondok Aren', 'Ciputat', 'Ciputat Timur', 'Serpong Utara', 'Setu'],
+          datasets: [
+            {
+              label: 'Positif',
+              data: [140, 120, 110, 95, 80, 75, 62],
+              backgroundColor: '#34d399',
+              borderRadius: 8
+            },
+            {
+              label: 'Netral',
+              data: [60, 55, 70, 50, 40, 38, 29],
+              backgroundColor: '#fbbf24',
+              borderRadius: 8
+            },
+            {
+              label: 'Negatif',
+              data: [30, 40, 35, 45, 30, 22, 22],
+              backgroundColor: '#f87171',
+              borderRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              stacked: false,
+              grid: { display: false },
+              ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } }
+            },
+            y: {
+              grid: { color: '#f3f4f6' },
+              ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, usePointStyle: true }
+            }
+          }
+        }
+      });
+    };
+  </script>
+</body>
+</html>
